@@ -60,3 +60,13 @@
 ## 3. Instalación
 
 Por definir...
+
+
+## 4. Frontend
+
+Por definir...
+
+
+## 5. Backend
+
+Por definir...
