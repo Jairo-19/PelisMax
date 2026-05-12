@@ -57,6 +57,83 @@
 
 ---
 
-## 3. Instalación
+## 3. Estructura de Carpetas
+
+```
+PelisMax/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/                    ← Componentes genéricos reutilizables
+│   │   │   │   ├── Logo.tsx
+│   │   │   │   └── Copyright.tsx
+│   │   │   └── layout/                ← Estructura global de la app
+│   │   │       ├── header/
+│   │   │       │   ├── HeaderNav.tsx
+│   │   │       │   └── HeaderActions.tsx
+│   │   │       ├── footer/
+│   │   │       │   ├── FooterNav.tsx
+│   │   │       │   └── FooterSocial.tsx
+│   │   │       ├── Header.tsx
+│   │   │       ├── Footer.tsx
+│   │   │       └── Layout.tsx
+│   │   ├── features/                  ← Lógica de dominio por característica
+│   │   │   ├── movies/                ← Características de películas
+│   │   │   │   ├── MovieCard.tsx
+│   │   │   │   └── MovieGrid.tsx
+│   │   │   └── auth/                  ← Características de autenticación
+│   │   │       ├── LoginForm.tsx
+│   │   │       └── RegisterForm.tsx
+│   │   ├── pages/                     ← Páginas que ensamblan features
+│   │   │   └── home/
+│   │   │       ├── Home.tsx
+│   │   │       └── Home.css
+│   │   ├── services/                  ← Llamadas a API y lógica compartida
+│   │   │   └── movieService.ts
+│   │   ├── assets/                    ← Imágenes, fuentes, etc.
+│   │   │   ├── imagenes/
+│   │   │   └── ...
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── index.css
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── backend/
+│   ├── src/
+│   │   ├── routes/                    ← Definición de endpoints
+│   │   ├── controllers/               ← Lógica de negocio
+│   │   ├── services/                  ← Servicios reutilizables
+│   │   ├── middleware/                ← Middlewares personalizados
+│   │   ├── config/                    ← Configuración de la app
+│   │   └── index.ts
+│   ├── package.json
+│   └── tsconfig.json
+├── flujos/                            ← Documentación de procesos
+├── agents.md                          ← Guía de arquitectura
+├── README.md
+└── docker-compose.yml
+```
+
+### Explicación de la Estructura
+
+**`components/ui/`** — Componentes sin lógica de negocio, reutilizables en cualquier parte:
+- `Logo.tsx` — Logo personalizable por tamaño
+- `Copyright.tsx` — Pie de página personalizable
+
+**`components/layout/`** — Estructura fija de la aplicación:
+- `Header.tsx` / `Footer.tsx` / `Layout.tsx` — Padres que ensamblan hijos
+- `header/` y `footer/` — Componentes específicos del layout
+
+**`features/`** — Cada característica es independiente y autónoma:
+- `movies/` — Todo lo relacionado con películas
+- `auth/` — Todo lo relacionado con autenticación
+
+**`pages/`** — Páginas que solo ensamblan `features` sin lógica propia
+
+---
+
+## 4. Instalación
 
 Por definir...
+

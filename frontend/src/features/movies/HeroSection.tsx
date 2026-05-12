@@ -1,7 +1,7 @@
-import './Home.css'
-import cineImg from '../assets/imagenes/cine.jpg'
+import cineImg from '../../assets/imagenes/cine.jpg'
+import './HeroSection.css'
 
-export default function Home() {
+export default function HeroSection() {
   return (
     <section
       className="hero relative h-screen w-full flex items-center justify-start"
@@ -13,9 +13,8 @@ export default function Home() {
       {/* Título */}
       <div className="relative z-10 px-16 max-w-2xl">
         <h1 className="text-5xl font-extrabold leading-tight text-white animate-fade-in-up">
-          Descubre el mejor{' '}
-          <span style={{ color: '#E50914' }}>cine</span>{' '}
-          en un solo lugar
+          Gestiona tus <span className="text-[#E50914]">películas</span> <br />
+          favoritas en un solo lugar
         </h1>
       </div>
     </section>

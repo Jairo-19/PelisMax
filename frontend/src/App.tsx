@@ -1,5 +1,5 @@
-import Layout from './components/common/Layout.tsx'
-import Home from './pages/Home.tsx'
+import Layout from './components/layout/Layout.tsx'
+import Home from './pages/home/Home.tsx'
 
 function App() {
   return (
