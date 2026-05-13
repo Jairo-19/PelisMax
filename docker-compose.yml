@@ -1,0 +1,38 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n_pelismax
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --url http://n8n_pelismax:5678
+    depends_on:
+      - n8n
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.1
+    container_name: pelismax_mysql
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pelismax
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  n8n_data:
+  mysql_data:
+
