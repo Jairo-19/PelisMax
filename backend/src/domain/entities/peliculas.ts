@@ -7,15 +7,17 @@ export class Pelicula {
     descripcion: string;
     imagen: string;
     anio: number;
+    genero: string;
     estrellas: number;
     id_externo: string;
 
-    constructor(id: number, titulo: string, descripcion: string, imagen: string, anio: number, estrellas: number, id_externo: string) {
+    constructor(id: number, titulo: string, descripcion: string, imagen: string, anio: number, genero: string, estrellas: number, id_externo: string) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.imagen = imagen;
         this.anio = anio;
+        this.genero = genero;
         this.estrellas = estrellas;
         this.id_externo = id_externo;
     }   

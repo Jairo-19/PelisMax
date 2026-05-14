@@ -40,8 +40,8 @@ export class ControladorPeliculas {
     // Método para manejar la solicitud de agregar una nueva película
     async agregarPelicula(req: Request, res: Response): Promise<void> {
         try {
-            const { id, titulo, descripcion, imagen, anio, estrellas, id_externo } = req.body;
-            const nuevaPelicula = new Pelicula(id || 0, titulo, descripcion, imagen, anio, estrellas, id_externo);
+            const { id, titulo, descripcion, imagen, anio, genero, estrellas, id_externo } = req.body;
+            const nuevaPelicula = new Pelicula(id || 0, titulo, descripcion, imagen, anio, genero, estrellas, id_externo);
             const peliculaCreada: Pelicula = await this.casoDeUso.agregarPelicula(nuevaPelicula);
             res.status(201).json(peliculaCreada);
         } catch (error) {
@@ -59,8 +59,8 @@ export class ControladorPeliculas {
     async actualizarPelicula(req: Request, res: Response): Promise<void> {
         const id = Number(req.params.id);
         try {
-            const { titulo, descripcion, imagen, anio, estrellas, id_externo } = req.body;
-            const peliculaActualizada = new Pelicula(id, titulo, descripcion, imagen, anio, estrellas, id_externo);
+            const { titulo, descripcion, imagen, anio, genero, estrellas, id_externo } = req.body;
+            const peliculaActualizada = new Pelicula(id, titulo, descripcion, imagen, anio, genero, estrellas, id_externo);
             const resultado: Pelicula = await this.casoDeUso.actualizarPelicula(peliculaActualizada);
             res.json(resultado);
         } catch (error) {

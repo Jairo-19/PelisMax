@@ -62,15 +62,15 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
     async agregarPelicula(pelicula: Pelicula): Promise<Pelicula> {
         const connection = await pool.getConnection();
         try {
-            const { titulo, descripcion, imagen, anio, estrellas, id_externo } = pelicula;
+            const { titulo, descripcion, imagen, anio, genero, estrellas, id_externo } = pelicula;
             const [result] = await connection.query(
-                'INSERT INTO peliculas (titulo, descripcion, imagen, anio, estrellas, id_externo) VALUES (?, ?, ?, ?, ?, ?)',
-                [titulo, descripcion, imagen, anio, estrellas, id_externo]
+                'INSERT INTO peliculas (titulo, descripcion, imagen, anio, genero, estrellas, id_externo) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [titulo, descripcion, imagen, anio, genero, estrellas, id_externo]
             );
             
             // Obtenemos el ID asignado por la BD
             const nuevoId = (result as any).insertId;
-            return new Pelicula(nuevoId, titulo, descripcion, imagen, anio, estrellas, id_externo);
+            return new Pelicula(nuevoId, titulo, descripcion, imagen, anio, genero, estrellas, id_externo);
         } finally {
             connection.release();
         }
@@ -80,10 +80,10 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
     async actualizarPelicula(pelicula: Pelicula): Promise<Pelicula> {
         const connection = await pool.getConnection();
         try {
-            const { id, titulo, descripcion, imagen, anio, estrellas, id_externo } = pelicula;
+            const { id, titulo, descripcion, imagen, anio, genero, estrellas, id_externo } = pelicula;
             await connection.query(
-                'UPDATE peliculas SET titulo = ?, descripcion = ?, imagen = ?, anio = ?, estrellas = ?, id_externo = ? WHERE id = ?',
-                [titulo, descripcion, imagen, anio, estrellas, id_externo, id]
+                'UPDATE peliculas SET titulo = ?, descripcion = ?, imagen = ?, anio = ?, genero = ?, estrellas = ?, id_externo = ? WHERE id = ?',
+                [titulo, descripcion, imagen, anio, genero, estrellas, id_externo, id]
             );
             return pelicula;
         } finally {
@@ -109,6 +109,7 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
             row.descripcion,
             row.imagen,
             row.anio,
+            row.genero,
             row.estrellas,
             row.id_externo
         );

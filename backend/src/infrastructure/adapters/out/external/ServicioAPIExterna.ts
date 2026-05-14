@@ -34,14 +34,14 @@ export class ServicioAPIExterna implements IServicioAPIExterna {
 
     private mapearAPIAlModelo(peliculaAPI: PeliculaAPIExterna): Pelicula {
         return new Pelicula(
-            0, // id: 0 porque es nueva, la BD lo generará
-            peliculaAPI.title,        // title → titulo
+            0,                         // id: 0 porque es nueva, la BD lo generará
+            peliculaAPI.title,         // title → titulo
             peliculaAPI.description,   // description → descripcion
             peliculaAPI.image_url,     // image_url → imagen
-
-            peliculaAPI.year, // year → anio
-            peliculaAPI.stars, // stars → estrellas
-            peliculaAPI.id.toString() // id (de la API) → id_externo (convertido a string)
+            peliculaAPI.year,          // year → anio
+            peliculaAPI.genre,         // genre → genero
+            peliculaAPI.stars,         // stars → estrellas
+            peliculaAPI.id.toString()  // id (de la API) → id_externo
         );
     }
 }
