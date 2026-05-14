@@ -30,10 +30,16 @@ const features = [
 export default function FeaturesSection() {
   return (
     <section className="bg-[#101010] py-20 px-4">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-12">
-        {features.map((feature, index) => (
-          <FeatureCard key={index} {...feature} />
-        ))}
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-extrabold text-white mb-12 text-center">
+          ¿Por qué <span className="text-[#E50914]">elegirnos?</span>
+        </h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
+          {features.map((feature, index) => (
+            <FeatureCard key={index} {...feature} />
+          ))}
+        </div>
       </div>
     </section>
   )
