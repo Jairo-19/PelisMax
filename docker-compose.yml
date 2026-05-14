@@ -1,3 +1,8 @@
+# COMANDOS IMPORTANTES DE USO:
+# Para iniciar los servicios: docker-compose up -d
+# Para detener los servicios: docker-compose down
+# Para eliminar todo: docker-compose down -v --rmi all
+
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n

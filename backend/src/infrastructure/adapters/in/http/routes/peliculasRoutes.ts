@@ -6,12 +6,14 @@ import { Router } from 'express';
 import { ControladorPeliculas } from '../controllers/ControladorPeliculas';
 import { CasoDeUsoPeliculas } from '../../../../../application/use-cases/CasoDeUsoPeliculas';
 import { RepositorioPeliculas } from '../../../out/persistence/RepositorioPeliculas';
+import { ServicioAPIExterna } from '../../../out/external/ServicioAPIExterna';
 
 // Ensamblaje de capas (inyección de dependencias)
 // De adentro hacia afuera: repositorio → caso de uso → controlador
-const repositorio = new RepositorioPeliculas();           // Capa de persistencia (BD)
-const casoDeUso = new CasoDeUsoPeliculas(repositorio);    // Capa de lógica de negocio
-const controlador = new ControladorPeliculas(casoDeUso);  // Capa de presentación (HTTP)
+const repositorio = new RepositorioPeliculas();                      // Capa de persistencia (BD)
+const servicioAPIExterna = new ServicioAPIExterna();                 // Servicio de API externa
+const casoDeUso = new CasoDeUsoPeliculas(repositorio, servicioAPIExterna); // Capa de lógica de negocio
+const controlador = new ControladorPeliculas(casoDeUso);              // Capa de presentación (HTTP)
 
 // Creamos el router de Express
 const router = Router();
@@ -25,6 +27,9 @@ router.get('/:id', (req, res) => controlador.obtenerPeliculaPorId(req, res));
 
 // POST   /api/peliculas            → Crea una nueva película
 router.post('/', (req, res) => controlador.agregarPelicula(req, res));
+
+// POST   /api/peliculas/importar   → Importa películas desde la API externa
+router.post('/importar', (req, res) => controlador.importarPeliculas(req, res));
 
 // PUT    /api/peliculas/:id        → Actualiza una película existente
 router.put('/:id', (req, res) => controlador.actualizarPelicula(req, res));

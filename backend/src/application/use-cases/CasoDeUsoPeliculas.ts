@@ -3,6 +3,7 @@
 
 import { Pelicula } from "../../domain/entities/peliculas";
 import { IRepositorioPeliculas } from "../../domain/ports/out/IRepositorioPeliculas";
+import { IServicioAPIExterna } from "../../domain/ports/out/IServicioAPIExterna";
 import { ICasoDeUsoPeliculas } from "../../domain/ports/in/ICasoDeUsoPeliculas";
 import { PeliculaNoEncontrada, PeliculaDuplicada, ErrorValidacionPelicula } from "../../domain/exceptions/PeliculaException";       
 
@@ -11,9 +12,11 @@ export class CasoDeUsoPeliculas implements ICasoDeUsoPeliculas {
     // Recibe el repositorio en el constructor (inyección de dependencias)
     // Así no depende de una BD específica, solo del contrato IRepositorioPeliculas
     private repositorio: IRepositorioPeliculas;
+    private servicioAPIExterna: IServicioAPIExterna;
 
-    constructor(repositorio: IRepositorioPeliculas) {
+    constructor(repositorio: IRepositorioPeliculas, servicioAPIExterna?: IServicioAPIExterna) {
         this.repositorio = repositorio;
+        this.servicioAPIExterna = servicioAPIExterna as IServicioAPIExterna;
     }
 
     // Obtiene todas las películas del repositorio
@@ -40,6 +43,11 @@ export class CasoDeUsoPeliculas implements ICasoDeUsoPeliculas {
         if (pelicula.estrellas < 0 || pelicula.estrellas > 5) {
             throw new ErrorValidacionPelicula('Las estrellas deben estar entre 0 y 5');
         }
+        // Verificar que no exista ya una película con el mismo id_externo
+        const existente = await this.repositorio.obtenerPorIdExterno(pelicula.id_externo);
+        if (existente) {
+            throw new PeliculaDuplicada(pelicula.id_externo);
+        }
         return this.repositorio.agregarPelicula(pelicula);
     }
 
@@ -63,5 +71,42 @@ export class CasoDeUsoPeliculas implements ICasoDeUsoPeliculas {
             throw new PeliculaNoEncontrada(id);
         }
         return this.repositorio.eliminarPelicula(id);
+    }
+
+    // Importa películas desde la API externa y las guarda en la base de datos
+    // Devuelve solo las nuevas; las ya existentes (mismo id_externo) se omiten sin error
+    async importarPeliculas(): Promise<{ importadas: Pelicula[]; omitidas: number }> {
+        if (!this.servicioAPIExterna) {
+            throw new Error('Servicio de API externa no configurado');
+        }
+        
+        try {
+            const peliculasDelAPI = await this.servicioAPIExterna.obtenerPeliculas();
+            
+            const importadas: Pelicula[] = [];
+            let omitidas = 0;
+
+            for (const pelicula of peliculasDelAPI) {
+                // Comprobar si ya existe por id_externo ANTES de intentar INSERT
+                // Esto evita que MySQL incremente el auto_increment en inserts fallidos
+                const yaExiste = await this.repositorio.obtenerPorIdExterno(pelicula.id_externo);
+                if (yaExiste) {
+                    omitidas++;
+                    continue;
+                }
+                try {
+                    const peliculaGuardada = await this.agregarPelicula(pelicula);
+                    importadas.push(peliculaGuardada);
+                } catch (error: any) {
+                    omitidas++;
+                    console.warn(`Omitida '${pelicula.titulo}':`, error.message);
+                }
+            }
+            
+            return { importadas, omitidas };
+        } catch (error) {
+            console.error('Error al importar películas:', error);
+            throw error;
+        }
     }
 }

@@ -3,7 +3,7 @@
 import { Request, Response } from 'express';
 import { CasoDeUsoPeliculas } from '../../../../../application/use-cases/CasoDeUsoPeliculas';
 import { Pelicula } from '../../../../../domain/entities/peliculas';
-import { PeliculaNoEncontrada, ErrorValidacionPelicula } from '../../../../../domain/exceptions/PeliculaException';
+import { PeliculaNoEncontrada, PeliculaDuplicada, ErrorValidacionPelicula } from '../../../../../domain/exceptions/PeliculaException';
 
 export class ControladorPeliculas {
     private casoDeUso: CasoDeUsoPeliculas;
@@ -40,13 +40,15 @@ export class ControladorPeliculas {
     // Método para manejar la solicitud de agregar una nueva película
     async agregarPelicula(req: Request, res: Response): Promise<void> {
         try {
-            const { id, titulo, descripcion, imagen, duracion, anio, estrellas, id_externo } = req.body;
-            const nuevaPelicula = new Pelicula(id || 0, titulo, descripcion, imagen, duracion, anio, estrellas, id_externo);
+            const { id, titulo, descripcion, imagen, anio, estrellas, id_externo } = req.body;
+            const nuevaPelicula = new Pelicula(id || 0, titulo, descripcion, imagen, anio, estrellas, id_externo);
             const peliculaCreada: Pelicula = await this.casoDeUso.agregarPelicula(nuevaPelicula);
             res.status(201).json(peliculaCreada);
         } catch (error) {
             if (error instanceof ErrorValidacionPelicula) {
                 res.status(400).json({ error: (error as any).message });
+            } else if (error instanceof PeliculaDuplicada) {
+                res.status(409).json({ error: (error as any).message });
             } else {
                 res.status(500).json({ error: 'Error al agregar la película' });
             }
@@ -57,8 +59,8 @@ export class ControladorPeliculas {
     async actualizarPelicula(req: Request, res: Response): Promise<void> {
         const id = Number(req.params.id);
         try {
-            const { titulo, descripcion, imagen, duracion, anio, estrellas, id_externo } = req.body;
-            const peliculaActualizada = new Pelicula(id, titulo, descripcion, imagen, duracion, anio, estrellas, id_externo);
+            const { titulo, descripcion, imagen, anio, estrellas, id_externo } = req.body;
+            const peliculaActualizada = new Pelicula(id, titulo, descripcion, imagen, anio, estrellas, id_externo);
             const resultado: Pelicula = await this.casoDeUso.actualizarPelicula(peliculaActualizada);
             res.json(resultado);
         } catch (error) {
@@ -84,6 +86,23 @@ export class ControladorPeliculas {
             } else {
                 res.status(500).json({ error: 'Error al eliminar la película' });
             }
+        }
+    }
+
+    // Método para manejar la solicitud de importar películas desde la API externa
+    async importarPeliculas(req: Request, res: Response): Promise<void> {
+        try {
+            const { importadas, omitidas } = await this.casoDeUso.importarPeliculas();
+            res.status(201).json({
+                mensaje: importadas.length > 0
+                    ? `Importación completada: ${importadas.length} nuevas, ${omitidas} ya existían.`
+                    : `Sin cambios: todas las películas ya estaban en la base de datos (${omitidas} omitidas).`,
+                importadas: importadas.length,
+                omitidas,
+                peliculas: importadas
+            });
+        } catch (error) {
+            res.status(500).json({ error: 'Error al importar películas de la API externa', detalle: (error as any).message });
         }
     }
 }

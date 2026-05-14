@@ -46,19 +46,31 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
         }
     }
 
+    // Obtiene una película por su id_externo. Devuelve null si no existe
+    async obtenerPorIdExterno(idExterno: string): Promise<Pelicula | null> {
+        const connection = await pool.getConnection();
+        try {
+            const [rows] = await connection.query('SELECT * FROM peliculas WHERE id_externo = ?', [idExterno]);
+            const row = (rows as any[])[0];
+            return row ? this.mapearRowAPelicula(row) : null;
+        } finally {
+            connection.release();
+        }
+    }
+
     // Agrega una nueva película a la BD y devuelve la película con su ID asignado
     async agregarPelicula(pelicula: Pelicula): Promise<Pelicula> {
         const connection = await pool.getConnection();
         try {
-            const { titulo, descripcion, imagen, duracion, anio, estrellas, id_externo } = pelicula;
+            const { titulo, descripcion, imagen, anio, estrellas, id_externo } = pelicula;
             const [result] = await connection.query(
-                'INSERT INTO peliculas (nombre, descripcion, imagen, duracion, anio, estrellas, id_externo) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [titulo, descripcion, imagen, duracion, anio, estrellas, id_externo]
+                'INSERT INTO peliculas (titulo, descripcion, imagen, anio, estrellas, id_externo) VALUES (?, ?, ?, ?, ?, ?)',
+                [titulo, descripcion, imagen, anio, estrellas, id_externo]
             );
             
             // Obtenemos el ID asignado por la BD
             const nuevoId = (result as any).insertId;
-            return new Pelicula(nuevoId, titulo, descripcion, imagen, duracion, anio, estrellas, id_externo);
+            return new Pelicula(nuevoId, titulo, descripcion, imagen, anio, estrellas, id_externo);
         } finally {
             connection.release();
         }
@@ -68,10 +80,10 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
     async actualizarPelicula(pelicula: Pelicula): Promise<Pelicula> {
         const connection = await pool.getConnection();
         try {
-            const { id, titulo, descripcion, imagen, duracion, anio, estrellas, id_externo } = pelicula;
+            const { id, titulo, descripcion, imagen, anio, estrellas, id_externo } = pelicula;
             await connection.query(
-                'UPDATE peliculas SET nombre = ?, descripcion = ?, imagen = ?, duracion = ?, anio = ?, estrellas = ?, id_externo = ? WHERE id = ?',
-                [titulo, descripcion, imagen, duracion, anio, estrellas, id_externo, id]
+                'UPDATE peliculas SET titulo = ?, descripcion = ?, imagen = ?, anio = ?, estrellas = ?, id_externo = ? WHERE id = ?',
+                [titulo, descripcion, imagen, anio, estrellas, id_externo, id]
             );
             return pelicula;
         } finally {
@@ -93,10 +105,9 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
     private mapearRowAPelicula(row: any): Pelicula {
         return new Pelicula(
             row.id,
-            row.nombre,  // en BD es 'nombre', en la entidad es 'titulo'
+            row.titulo,
             row.descripcion,
             row.imagen,
-            row.duracion,
             row.anio,
             row.estrellas,
             row.id_externo

@@ -8,4 +8,5 @@ export interface ICasoDeUsoPeliculas {
     agregarPelicula(pelicula: Pelicula): Promise<Pelicula>; //agrega una nueva película a la base de datos y devuelve la película agregada (con su ID asignado)
     actualizarPelicula(pelicula: Pelicula): Promise<Pelicula>; //actualiza una película existente en la base de datos y devuelve la película actualizada
     eliminarPelicula(id: number): Promise<void>; //elimina una película de la base de datos por su ID
+    importarPeliculas(): Promise<{ importadas: Pelicula[]; omitidas: number }>; //importa películas desde la API externa y las guarda en la base de datos
 }
