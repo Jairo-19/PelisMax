@@ -1,20 +1,50 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { registrar, login } from '../../services/authService'
 
 interface RegisterFormProps {
   onSuccess?: () => void
 }
 
 export default function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const mostrarError = (mensaje: string) => {
+    setError(mensaje)
+    setTimeout(() => setError(''), 4000)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSuccess?.()
+    setError('')
+
+    if (password !== confirmPassword) {
+      mostrarError('Las contraseñas no coinciden')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await registrar(name, email, password)
+      const { token, usuario } = await login(email, password)
+      localStorage.setItem('token', token)
+      localStorage.setItem('usuario', JSON.stringify(usuario))
+      window.dispatchEvent(new Event('authChange'))
+      onSuccess?.()
+      navigate('/')
+    } catch (err: any) {
+      mostrarError(err.message || 'Error al registrar el usuario')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -123,11 +153,18 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           </div>
         </div>
 
+        {error && (
+          <p className="text-red-400 text-sm text-center bg-red-400/10 border border-red-400/20 rounded-xl py-3 px-4">
+            {error}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-[#E50914] hover:bg-[#ff1a26] text-white font-semibold py-3.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#E50914]/25 hover:shadow-[#E50914]/40"
+          disabled={loading}
+          className="w-full bg-[#E50914] hover:bg-[#ff1a26] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#E50914]/25 hover:shadow-[#E50914]/40"
         >
-          Crear cuenta
+          {loading ? 'Creando cuenta...' : 'Crear cuenta'}
         </button>
       </form>
 
