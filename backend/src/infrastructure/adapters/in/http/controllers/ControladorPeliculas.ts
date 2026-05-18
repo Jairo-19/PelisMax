@@ -12,11 +12,17 @@ export class ControladorPeliculas {
         this.casoDeUso = casoDeUso;
     }
 
-    // Método para manejar la solicitud de obtener todas las películas
+    // Método para manejar la solicitud de obtener todas las películas (con paginación opcional)
     async obtenerPeliculas(req: Request, res: Response): Promise<void> {
         try {
-            const peliculas: Pelicula[] = await this.casoDeUso.obtenerPeliculas();
-            res.json(peliculas);
+            const { pagina, limite } = req.query;
+            if (pagina && limite) {
+                const peliculas = await this.casoDeUso.obtenerPeliculasPaginadas(Number(pagina), Number(limite));
+                res.json(peliculas);
+            } else {
+                const peliculas: Pelicula[] = await this.casoDeUso.obtenerPeliculas();
+                res.json(peliculas);
+            }
         } catch (error) {
             res.status(500).json({ error: 'Error al obtener las películas' });
         }

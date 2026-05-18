@@ -16,3 +16,9 @@ export async function obtenerPeliculas(): Promise<Pelicula[]> {
   if (!response.ok) throw new Error('Error al obtener películas')
   return response.json()
 }
+
+export async function obtenerPeliculasPaginadas(pagina: number, limite: number = 16): Promise<Pelicula[]> {
+  const response = await fetch(`${API_BASE_URL}/peliculas?pagina=${pagina}&limite=${limite}`)
+  if (!response.ok) throw new Error('Error al obtener películas')
+  return response.json()
+}

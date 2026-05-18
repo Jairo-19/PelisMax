@@ -5,6 +5,7 @@ import Login from './pages/login/Login.tsx'
 import Register from './pages/register/Register.tsx'
 import Transition from './pages/transition/Transition.tsx'
 import Profile from './pages/profile/Profile.tsx'
+import Movies from './pages/movies/Movies.tsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/perfil" element={<Layout><Profile /></Layout>} />
+        <Route path="/peliculas" element={<Layout><Movies /></Layout>} />
         <Route path="/" element={<Layout><Home /></Layout>} />
       </Routes>
     </BrowserRouter>

@@ -34,6 +34,18 @@ export class RepositorioPeliculas implements IRepositorioPeliculas {
         }
     }
 
+    // Obtiene películas paginadas según página y límite
+    async obtenerPeliculasPaginadas(pagina: number, limite: number): Promise<Pelicula[]> {
+        const connection = await pool.getConnection();
+        try {
+            const offset = (pagina - 1) * limite;
+            const [rows] = await connection.query('SELECT * FROM peliculas LIMIT ? OFFSET ?', [limite, offset]);
+            return (rows as any[]).map(row => this.mapearRowAPelicula(row));
+        } finally {
+            connection.release();
+        }
+    }
+
     // Obtiene una película por su ID. Devuelve null si no existe
     async obtenerPeliculaPorId(id: number): Promise<Pelicula | null> {
         const connection = await pool.getConnection();

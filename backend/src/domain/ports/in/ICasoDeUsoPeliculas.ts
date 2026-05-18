@@ -4,6 +4,7 @@ import { Pelicula } from "../../entities/peliculas";
 
 export interface ICasoDeUsoPeliculas {
     obtenerPeliculas(): Promise<Pelicula[]>; //devuelve todas las películas
+    obtenerPeliculasPaginadas(pagina: number, limite: number): Promise<Pelicula[]>; //devuelve películas paginadas
     obtenerPeliculaPorId(id: number): Promise<Pelicula | null>; //devuelve una película específica por su ID, o null si no se encuentra
     agregarPelicula(pelicula: Pelicula): Promise<Pelicula>; //agrega una nueva película a la base de datos y devuelve la película agregada (con su ID asignado)
     actualizarPelicula(pelicula: Pelicula): Promise<Pelicula>; //actualiza una película existente en la base de datos y devuelve la película actualizada

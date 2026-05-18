@@ -8,7 +8,7 @@ export default function HeaderNav() {
           </a>
         </li>
         <li>
-          <a href="#" className="hover:text-[#E50914] transition-colors duration-200">
+          <a href="/peliculas" className="hover:text-[#E50914] transition-colors duration-200">
             Películas
           </a>
         </li>

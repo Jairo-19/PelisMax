@@ -24,6 +24,11 @@ export class CasoDeUsoPeliculas implements ICasoDeUsoPeliculas {
         return this.repositorio.obtenerPeliculas();
     }
 
+    // Obtiene películas paginadas
+    async obtenerPeliculasPaginadas(pagina: number, limite: number): Promise<Pelicula[]> {
+        return this.repositorio.obtenerPeliculasPaginadas(pagina, limite);
+    }
+
     // Obtiene una película por ID. Si no existe, lanza excepción de dominio
     async obtenerPeliculaPorId(id: number): Promise<Pelicula | null> {
         const pelicula = await this.repositorio.obtenerPeliculaPorId(id);
