@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { type Pelicula } from '../../services/peliculasService'
+import BookmarkButton from './BookmarkButton'
 
 interface Props {
   pelicula: Pelicula
@@ -55,12 +56,15 @@ export default function MovieModal({ pelicula, onCerrar }: Props) {
         </button>
 
         {/* Imagen */}
-        <div className="md:w-72 w-full flex-shrink-0">
+        <div className="md:w-72 w-full flex-shrink-0 relative">
           <img
             src={pelicula.imagen}
             alt={pelicula.titulo}
             className="w-full h-64 md:h-full object-cover"
           />
+          <div className="absolute top-2 left-2">
+            <BookmarkButton />
+          </div>
         </div>
 
         {/* Info */}

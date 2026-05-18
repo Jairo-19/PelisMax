@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { type Pelicula, obtenerPeliculasPaginadas } from '../../services/peliculasService'
 import MovieModal from './MovieModal'
+import BookmarkButton from './BookmarkButton'
 
 export default function MovieGrid() {
   const [peliculas, setPeliculas] = useState<Pelicula[]>([])
@@ -64,6 +65,9 @@ export default function MovieGrid() {
               alt={pelicula.titulo}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
+            <div className="absolute top-2 left-2 z-10">
+              <BookmarkButton />
+            </div>
             <div className="absolute top-2 right-2 bg-[#E50914] text-white text-xs font-semibold px-2 py-1 rounded-full">
               {pelicula.genero}
             </div>
