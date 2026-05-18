@@ -9,6 +9,7 @@
 - 🔍 **Buscador de películas** — Encuentra películas por título
 - 🎲 **Recomendador aleatorio** — Descubre películas al azar
 - 🎭 **Categorías** — Explora películas por géneros
+- 🎬 **Catálogo paginado** — La sección de películas carga 16 películas por petición; al hacer scroll al final de la página se solicitan automáticamente las siguientes 16 al backend (infinite scroll)
 - 👤 **Perfil de usuario** — Gestiona tu cuenta personal
 - ⭐ **Mi lista / Favoritos** — Guarda tus películas preferidas
 - 📧 **Email de bienvenida** — Recibe un correo de bienvenida al registrarte
