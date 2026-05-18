@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import UserDropdown from '../../../features/auth/UserDropdown'
 
 export default function HeaderActions() {
   const [loggedIn, setLoggedIn] = useState(() => !!localStorage.getItem('token'))
@@ -10,13 +11,7 @@ export default function HeaderActions() {
   }, [])
 
   if (loggedIn) {
-    return (
-      <div className="flex items-center">
-        <button className="text-[#E50914] hover:text-[#ff1a26] transition-colors duration-200" title="Mi cuenta">
-          <i className="bi bi-person-circle text-2xl"></i>
-        </button>
-      </div>
-    )
+    return <UserDropdown />
   }
 
   return (
