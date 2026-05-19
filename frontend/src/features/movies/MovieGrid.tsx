@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { type Pelicula, obtenerPeliculasPaginadas } from '../../services/peliculasService'
+import { obtenerFavoritas, agregarFavorita, eliminarFavorita } from '../../services/favoritasService'
 import MovieModal from './MovieModal'
 import BookmarkButton from './BookmarkButton'
 
@@ -15,9 +16,18 @@ export default function MovieGrid({ busqueda = '', categoria = '', onCategorias 
   const [cargando, setCargando] = useState(false)
   const [hayMas, setHayMas] = useState(true)
   const [seleccionada, setSeleccionada] = useState<Pelicula | null>(null)
+  const [favoritos, setFavoritos] = useState<number[]>([])
   const cargandoRef = useRef(false)
   const hayMasRef = useRef(true)
   const centinela = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+    obtenerFavoritas()
+      .then(favs => setFavoritos(favs.map(p => p.id)))
+      .catch(() => {})
+  }, [])
 
   // Dispara fetch cada vez que `pagina` cambia
   useEffect(() => {
@@ -64,6 +74,20 @@ export default function MovieGrid({ busqueda = '', categoria = '', onCategorias 
     }
   }, [peliculas])
 
+  const toggleFavorito = async (pelicula: Pelicula, guardado: boolean) => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+    try {
+      if (guardado) {
+        await agregarFavorita(pelicula.id)
+        setFavoritos(prev => [...prev, pelicula.id])
+      } else {
+        await eliminarFavorita(pelicula.id)
+        setFavoritos(prev => prev.filter(id => id !== pelicula.id))
+      }
+    } catch {}
+  }
+
   const peliculasFiltradas = peliculas.filter(p => {
     const coincideBusqueda = !busqueda.trim() || p.titulo.toLowerCase().includes(busqueda.toLowerCase())
     const coincideCategoria = !categoria || p.genero === categoria
@@ -85,7 +109,10 @@ export default function MovieGrid({ busqueda = '', categoria = '', onCategorias 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
             <div className="absolute top-2 left-2 z-10">
-              <BookmarkButton />
+              <BookmarkButton
+                guardado={favoritos.includes(pelicula.id)}
+                onChange={g => toggleFavorito(pelicula, g)}
+              />
             </div>
             <div className="absolute top-2 right-2 bg-[#E50914] text-white text-xs font-semibold px-2 py-1 rounded-full">
               {pelicula.genero}

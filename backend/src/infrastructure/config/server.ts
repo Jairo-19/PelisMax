@@ -7,6 +7,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import peliculasRoutes from '../adapters/in/http/routes/peliculasRoutes';
 import authRoutes from '../adapters/in/http/routes/authRoutes';
+import favoritasRoutes from '../adapters/in/http/routes/favoritasRoutes';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json()); // permite leer el body de las peticiones como JSON
 // Registramos las rutas bajo su prefijo
 app.use('/api/peliculas', peliculasRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/favoritas', favoritasRoutes);
 
 // Ruta de comprobación: sirve para saber si el servidor está vivo
 app.get('/api/health', (req, res) => {
