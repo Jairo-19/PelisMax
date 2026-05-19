@@ -3,7 +3,13 @@ import { type Pelicula, obtenerPeliculasPaginadas } from '../../services/pelicul
 import MovieModal from './MovieModal'
 import BookmarkButton from './BookmarkButton'
 
-export default function MovieGrid() {
+interface MovieGridProps {
+  busqueda?: string
+  categoria?: string
+  onCategorias?: (cats: string[]) => void
+}
+
+export default function MovieGrid({ busqueda = '', categoria = '', onCategorias }: MovieGridProps) {
   const [peliculas, setPeliculas] = useState<Pelicula[]>([])
   const [pagina, setPagina] = useState(1)
   const [cargando, setCargando] = useState(false)
@@ -51,10 +57,23 @@ export default function MovieGrid() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (onCategorias && peliculas.length > 0) {
+      const unicas = [...new Set(peliculas.map(p => p.genero))].sort()
+      onCategorias(unicas)
+    }
+  }, [peliculas])
+
+  const peliculasFiltradas = peliculas.filter(p => {
+    const coincideBusqueda = !busqueda.trim() || p.titulo.toLowerCase().includes(busqueda.toLowerCase())
+    const coincideCategoria = !categoria || p.genero === categoria
+    return coincideBusqueda && coincideCategoria
+  })
+
   return (
     <div className="px-6 py-8">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {peliculas.map(pelicula => (
+        {peliculasFiltradas.map(pelicula => (
           <div
             key={pelicula.id}
             className="relative group cursor-pointer overflow-hidden rounded-md aspect-[2/3] bg-gray-900"
