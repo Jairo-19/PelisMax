@@ -265,21 +265,24 @@ Verifica que MySQL esté corriendo:
 docker ps
 ```
 
-### Paso 3: Crear la tabla `favoritos` en MySQL
+### Paso 3: Crear las tablas en MySQL
 
-Abre **phpMyAdmin** en [http://localhost:8080](http://localhost:8080) y ejecuta:
+Hay un archivo SQL ready-to-use en la raíz del proyecto: `base de datos de pelismax.sql`
 
-```sql
-CREATE TABLE IF NOT EXISTS favoritos (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id  INT NOT NULL,
-    pelicula_id INT NOT NULL,
-    creado_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_favorito (usuario_id, pelicula_id),
-    FOREIGN KEY (usuario_id)  REFERENCES usuarios(id)  ON DELETE CASCADE,
-    FOREIGN KEY (pelicula_id) REFERENCES peliculas(id) ON DELETE CASCADE
-);
+Abre **phpMyAdmin** en [http://localhost:8080](http://localhost:8080):
+1. Selecciona la base de datos `pelismax` (o créala si no existe)
+2. Ve a la pestaña **SQL**
+3. Copia el contenido de `base de datos de pelismax.sql` y ejecuta
+4. O usa la línea de comandos:
+
+```bash
+mysql -u root -h 127.0.0.1 -P 3310 pelismax < "base de datos de pelismax.sql"
 ```
+
+Esto creará las tablas:
+- `usuarios` — Datos de usuarios registrados
+- `peliculas` — Catálogo de películas
+- `favoritos` — Películas marcadas como favoritas por usuario
 
 ### Paso 4: Configurar Backend
 
@@ -317,19 +320,33 @@ npm run dev
 
 El servidor estará disponible en `http://localhost:3000`
 
-### Paso 5: Configurar Frontend
+### Paso 5: Compilar Frontend para Producción
 
 ```bash
 cd ../frontend
 npm install
-npm run dev
+npm run build
 ```
 
-La app estará disponible en `http://localhost:5173`
+Esto genera los archivos optimizados en `frontend/dist/`.
 
-### Paso 6: Importar películas desde API externa (Opcional)
+### Paso 6: Acceder a la Aplicación
 
-Ejecuta en postman o curl:
+**Para Desarrollo (Vite dev server):**
+```bash
+npm run dev  # En la carpeta frontend/
+```
+Accede a `http://localhost:5173`
+
+**Para Producción (Apache + XAMPP):**
+1. Asegúrate de que Apache esté corriendo desde el **Panel de XAMPP**
+2. Abre el navegador y ve a `http://pelismax.example.com`
+
+> ⚠️ El acceso por Apache requiere que `.htaccess` esté configurado en `frontend/dist/` para que React Router funcione correctamente. Este archivo ya está incluido en el proyecto.
+
+### Paso 7: Importar películas desde API externa (Opcional)
+
+Ejecuta en Postman o curl:
 
 ```bash
 POST http://localhost:3000/api/peliculas/importar
@@ -445,7 +462,54 @@ npm run start     # Ejecutar código compilado
 
 ---
 
-## 9. Contacto y Contribuciones
+## 9. Deployment
+
+### Producción con Apache (XAMPP)
+
+El proyecto está configurado para servirse a través de Apache usando `pelismax.example.com`:
+
+**Configuración Apache:**
+
+1. **Editar hosts del sistema** (`C:\Windows\System32\drivers\etc\hosts`):
+   ```
+   127.0.0.1    pelismax.example.com
+   ```
+
+2. **Agregar VirtualHost** en `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
+   ```apache
+   <VirtualHost *:80>
+       ServerAdmin admin
+       DocumentRoot "C:/xampp/htdocs/PelisMax/frontend/dist"
+       ServerName PelisMax.example.com
+       ServerAlias www.PelisMax.example.com
+       ErrorLog "logs/pelismax-error.log"
+       CustomLog "logs/pelismax-access.log" common
+
+       <Directory "C:/xampp/htdocs/PelisMax/frontend/dist">
+           Options Indexes FollowSymLinks
+           AllowOverride All
+           Require all granted
+       </Directory>
+   </VirtualHost>
+   ```
+
+3. **Reiniciar Apache** desde el Panel de XAMPP (Stop → Start)
+
+**Routing SPA:**
+El archivo `.htaccess` en `frontend/dist/` configura las reglas de reescritura para que React Router funcione correctamente. Redirige todas las rutas desconocidas a `index.html`.
+
+**Compilación:**
+Cada vez que modifiques el frontend, debes ejecutar:
+```bash
+cd frontend
+npm run build
+```
+
+Esto actualiza los archivos en `frontend/dist/` que Apache sirve.
+
+---
+
+## 10. Contacto y Contribuciones
 
 **PelisMax** es un proyecto educativo. Para reportar bugs o sugerir mejoras, crea un issue en el repositorio.
 
