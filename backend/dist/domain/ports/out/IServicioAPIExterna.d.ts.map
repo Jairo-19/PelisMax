@@ -1,0 +1,1 @@
+{"version":3,"file":"IServicioAPIExterna.d.ts","sourceRoot":"","sources":["../../../../src/domain/ports/out/IServicioAPIExterna.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,QAAQ,EAAE,MAAM,0BAA0B,CAAC;AAEpD,MAAM,WAAW,mBAAmB;IAChC,gBAAgB,IAAI,OAAO,CAAC,QAAQ,EAAE,CAAC,CAAC;CAC3C"}

@@ -14,8 +14,16 @@ dotenv.config();
 const app = express();
 
 // Middlewares globales (se aplican a todas las rutas)
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    'http://pelismax.example.com',
+    'http://localhost:5173',
+];
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // permite peticiones del frontend
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+        else callback(new Error(`CORS: origen no permitido → ${origin}`));
+    },
     credentials: true
 }));
 app.use(express.json()); // permite leer el body de las peticiones como JSON

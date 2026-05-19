@@ -1,0 +1,49 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ControladorAuth = void 0;
+const UsuarioException_1 = require("../../../../../domain/exceptions/UsuarioException");
+class ControladorAuth {
+    constructor(casoDeUso) {
+        this.casoDeUso = casoDeUso;
+    }
+    async registrar(req, res) {
+        const { nombre, email, password } = req.body;
+        if (!nombre || !email || !password) {
+            res.status(400).json({ error: 'nombre, email y password son requeridos' });
+            return;
+        }
+        try {
+            const usuario = await this.casoDeUso.registrar(nombre, email, password);
+            res.status(201).json({ mensaje: 'Usuario registrado correctamente', usuario });
+        }
+        catch (error) {
+            if (error instanceof UsuarioException_1.EmailYaRegistrado) {
+                res.status(409).json({ error: error.message });
+            }
+            else {
+                res.status(500).json({ error: 'Error al registrar el usuario' });
+            }
+        }
+    }
+    async login(req, res) {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            res.status(400).json({ error: 'email y password son requeridos' });
+            return;
+        }
+        try {
+            const resultado = await this.casoDeUso.login(email, password);
+            res.json(resultado);
+        }
+        catch (error) {
+            if (error instanceof UsuarioException_1.UsuarioNoEncontrado || error instanceof UsuarioException_1.CredencialesInvalidas) {
+                res.status(401).json({ error: 'Correo o contraseña incorrectos' });
+            }
+            else {
+                res.status(500).json({ error: 'Error al iniciar sesión' });
+            }
+        }
+    }
+}
+exports.ControladorAuth = ControladorAuth;
+//# sourceMappingURL=ControladorAuth.js.map

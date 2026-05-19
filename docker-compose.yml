@@ -4,24 +4,7 @@
 # Para eliminar todo: docker-compose down -v --rmi all
 
 services:
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    container_name: n8n_pelismax
-    ports:
-      - "5678:5678"
-    volumes:
-      - n8n_data:/home/node/.n8n
-    restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    command: tunnel --url http://n8n_pelismax:5678
-    depends_on:
-      - n8n
-    restart: unless-stopped
+ 
 
   mysql:
     image: mysql:8.1
@@ -38,6 +21,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  n8n_data:
   mysql_data:
 

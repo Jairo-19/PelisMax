@@ -320,31 +320,48 @@ npm run dev
 
 El servidor estará disponible en `http://localhost:3000`
 
-### Paso 5: Compilar Frontend para Producción
+### Paso 5: Configurar Frontend para Desarrollo
 
 ```bash
 cd ../frontend
 npm install
+```
+
+Vite está configurado con **proxy automático** para `/api` → `http://localhost:3000` y **HMR directo** en `localhost:5173`. Esto permite acceder desde cualquier dominio sin problemas de CORS.
+
+### Paso 6: Acceder a la Aplicación en Desarrollo
+
+**Opción A: Acceso local directo (http://localhost:5173)**
+```bash
+npm run dev  # En la carpeta frontend/
+```
+
+**Opción B: Acceso desde example.com con npm run dev (RECOMENDADO)**
+```bash
+npm run dev  # En la carpeta frontend/
+```
+Luego accede a `http://pelismax.example.com` en tu navegador.
+
+> El proxy de Vite asegura que las llamadas a `/api` se enruten a `http://localhost:3000` sin problemas de CORS.
+
+### Paso 7: Compilar Frontend para Producción
+
+```bash
 npm run build
 ```
 
 Esto genera los archivos optimizados en `frontend/dist/`.
 
-### Paso 6: Acceder a la Aplicación
-
-**Para Desarrollo (Vite dev server):**
-```bash
-npm run dev  # En la carpeta frontend/
-```
-Accede a `http://localhost:5173`
+### Paso 8: Acceder desde Apache en Producción
 
 **Para Producción (Apache + XAMPP):**
 1. Asegúrate de que Apache esté corriendo desde el **Panel de XAMPP**
 2. Abre el navegador y ve a `http://pelismax.example.com`
+3. El backend debe estar corriendo en `http://localhost:3000`
 
 > ⚠️ El acceso por Apache requiere que `.htaccess` esté configurado en `frontend/dist/` para que React Router funcione correctamente. Este archivo ya está incluido en el proyecto.
 
-### Paso 7: Importar películas desde API externa (Opcional)
+### Paso 9: Importar películas desde API externa (Opcional)
 
 Ejecuta en Postman o curl:
 
@@ -377,11 +394,13 @@ FRONTEND_URL=http://localhost:5173
 PORT=3000
 ```
 
-### Frontend (`.env.local`)
+### Frontend (`.env`)
 
 ```env
-VITE_API_URL=http://localhost:3000/api
+VITE_API_BASE_URL=/api
 ```
+
+> **Nota:** La URL es relativa (`/api`), lo que permite funcionar desde cualquier dominio. El proxy de Vite en desarrollo redirige `/api/*` a `http://localhost:3000/api/*` sin problemas de CORS.
 
 ---
 
@@ -462,7 +481,50 @@ npm run start     # Ejecutar código compilado
 
 ---
 
-## 9. Deployment
+## 9. Configuración de Desarrollo
+
+### Acceso desde example.com con npm run dev
+
+El proyecto está configurado para funcionar desde `http://pelismax.example.com` incluso en modo desarrollo sin necesidad de compilar:
+
+**Configuración requerida:**
+
+1. **Hosts del sistema** (`C:\Windows\System32\drivers\etc\hosts`):
+   ```
+   127.0.0.1    pelismax.example.com
+   ```
+
+2. **Vite (frontend/vite.config.ts)** — Ya configurado:
+   ```typescript
+   server: {
+     allowedHosts: ['pelismax.example.com'],
+     hmr: {
+       protocol: 'ws',
+       host: 'localhost',
+       port: 5173,
+     },
+     proxy: {
+       '/api': {
+         target: 'http://localhost:3000',
+         changeOrigin: true,
+       },
+     },
+   }
+   ```
+
+3. **Backend corriendo** en `http://localhost:3000`
+
+4. **Frontend en desarrollo**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+Luego accede a `http://pelismax.example.com` y todo funcionará sin errores de CORS ni WebSocket.
+
+---
+
+## 10. Deployment
 
 ### Producción con Apache (XAMPP)
 
@@ -480,8 +542,8 @@ El proyecto está configurado para servirse a través de Apache usando `pelismax
    <VirtualHost *:80>
        ServerAdmin admin
        DocumentRoot "C:/xampp/htdocs/PelisMax/frontend/dist"
-       ServerName PelisMax.example.com
-       ServerAlias www.PelisMax.example.com
+       ServerName pelismax.example.com
+       ServerAlias www.pelismax.example.com
        ErrorLog "logs/pelismax-error.log"
        CustomLog "logs/pelismax-access.log" common
 
@@ -495,6 +557,14 @@ El proyecto está configurado para servirse a través de Apache usando `pelismax
 
 3. **Reiniciar Apache** desde el Panel de XAMPP (Stop → Start)
 
+4. **Compilar Frontend**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+5. **Acceder**: `http://pelismax.example.com`
+
 **Routing SPA:**
 El archivo `.htaccess` en `frontend/dist/` configura las reglas de reescritura para que React Router funcione correctamente. Redirige todas las rutas desconocidas a `index.html`.
 
@@ -502,7 +572,7 @@ El archivo `.htaccess` en `frontend/dist/` configura las reglas de reescritura p
 Cada vez que modifiques el frontend, debes ejecutar:
 ```bash
 cd frontend
-npm run build
+npm run dev
 ```
 
 Esto actualiza los archivos en `frontend/dist/` que Apache sirve.
@@ -511,5 +581,5 @@ Esto actualiza los archivos en `frontend/dist/` que Apache sirve.
 
 ## 10. Contacto y Contribuciones
 
-**PelisMax** es un proyecto educativo. Para reportar bugs o sugerir mejoras, crea un issue en el repositorio.
+**PelisMax** es un proyecto educativo.
 

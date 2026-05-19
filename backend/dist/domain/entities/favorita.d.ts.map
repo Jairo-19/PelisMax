@@ -1,0 +1,1 @@
+{"version":3,"file":"favorita.d.ts","sourceRoot":"","sources":["../../../src/domain/entities/favorita.ts"],"names":[],"mappings":"AAAA,qBAAa,QAAQ;IAEN,EAAE,EAAE,MAAM;IACV,SAAS,EAAE,MAAM;IACjB,UAAU,EAAE,MAAM;IAClB,QAAQ,EAAE,IAAI;gBAHd,EAAE,EAAE,MAAM,EACV,SAAS,EAAE,MAAM,EACjB,UAAU,EAAE,MAAM,EAClB,QAAQ,GAAE,IAAiB;CAEzC"}
