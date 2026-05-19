@@ -74,6 +74,13 @@ export default function UserDropdown() {
               Mi perfil
             </button>
             <button
+              onClick={() => { setOpen(false); navigate('/favoritas') }}
+              className="flex items-center gap-3 px-5 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors duration-200 border-b border-gray-800"
+            >
+              <i className="bi bi-bookmark-heart text-base w-4"></i>
+              Favoritas
+            </button>
+            <button
               onClick={cerrarSesion}
               className="flex items-center gap-3 px-5 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors duration-200"
             >

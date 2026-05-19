@@ -1,0 +1,29 @@
+.favorites-hero-img {
+  animation: zoomIn 1.2s ease-out forwards;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(1.15);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.favorites-title {
+  animation: slideDownFade 0.8s ease-out forwards;
+}
+
+@keyframes slideDownFade {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
