@@ -5,6 +5,8 @@ import BookmarkButton from './BookmarkButton'
 interface Props {
   pelicula: Pelicula
   onCerrar: () => void
+  guardado?: boolean
+  onToggleFavorito?: (guardado: boolean) => void
 }
 
 function Estrellas({ valor }: { valor: number }) {
@@ -24,7 +26,7 @@ function Estrellas({ valor }: { valor: number }) {
   )
 }
 
-export default function MovieModal({ pelicula, onCerrar }: Props) {
+export default function MovieModal({ pelicula, onCerrar, guardado = false, onToggleFavorito }: Props) {
   // Cerrar con Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onCerrar() }
@@ -63,7 +65,7 @@ export default function MovieModal({ pelicula, onCerrar }: Props) {
             className="w-full h-64 md:h-full object-cover"
           />
           <div className="absolute top-2 left-2">
-            <BookmarkButton />
+            <BookmarkButton guardado={guardado} onChange={onToggleFavorito} />
           </div>
         </div>
 

@@ -76,7 +76,12 @@ export default function FavoritesGrid() {
         ))}
       </div>
       {seleccionada && (
-        <MovieModal pelicula={seleccionada} onCerrar={() => setSeleccionada(null)} />
+        <MovieModal
+          pelicula={seleccionada}
+          onCerrar={() => setSeleccionada(null)}
+          guardado={true}
+          onToggleFavorito={g => !g && quitarFavorita(seleccionada.id)}
+        />
       )}
     </>
   )

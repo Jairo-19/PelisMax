@@ -141,7 +141,12 @@ export default function MovieGrid({ busqueda = '', categoria = '', onCategorias 
       </div>
 
       {seleccionada && (
-        <MovieModal pelicula={seleccionada} onCerrar={() => setSeleccionada(null)} />
+        <MovieModal
+          pelicula={seleccionada}
+          onCerrar={() => setSeleccionada(null)}
+          guardado={favoritos.includes(seleccionada.id)}
+          onToggleFavorito={g => toggleFavorito(seleccionada, g)}
+        />
       )}
     </div>
   )
